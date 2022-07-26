@@ -67,6 +67,36 @@
 
             return;
         }
+
+        HKUnit *count = [HKUnit countUnit];
+        HKUnit *minute = [HKUnit minuteUnit];
+        HKUnit *unit = [RCTAppleHealthKit hkUnitFromOptions:input key:@"unit" withDefault:[count unitDividedByUnit:minute]];
+        NSMutableArray *samples = [NSMutableArray array];
+
+        NSArray *hrSamples = [input objectForKey:@"hrSamples"] ?: @[];
+
+        [hrSamples enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            double value = [obj doubleValue];
+            if (value > 0) {
+                NSDate *date = [startDate dateByAddingTimeInterval:idx];
+                HKQuantitySample* heartRate = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierHeartRate]
+                                                                        quantity:[HKQuantity quantityWithUnit:unit doubleValue:value]
+                                                                        startDate:date
+                                                                        endDate:date];
+                [samples addObject:heartRate];
+            }
+        }];
+
+        if ([hrSamples count] > 0) {
+            [self.healthStore addSamples:samples toWorkout:workout completion:^(BOOL success, NSError * _Nullable error) {
+                if (!success) {
+                    NSLog(@"An error occured saving the workout samples %@. The error was: %@.", workout, error);
+
+                    return;
+                }
+            }];
+        }
+
         callback(@[[NSNull null], [[workout UUID] UUIDString]]);
     };
 

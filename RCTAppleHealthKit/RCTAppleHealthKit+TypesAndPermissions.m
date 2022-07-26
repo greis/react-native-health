@@ -232,6 +232,10 @@
 }
 
 - (nullable HKObjectType *)getWritePermFromText:(nonnull NSString*) key {
+    if ([@"HeartRate" isEqualToString: key]) {
+        return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierHeartRate];
+    }
+
     // Body Measurements
     if ([@"Height" isEqualToString:key]) {
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierHeight];
