@@ -379,8 +379,8 @@
 }
 
 // Returns HealthKit read permissions from options array
-- (NSSet *)getReadPermsFromOptions:(NSArray *)options {
-    NSMutableSet *readPermSet = [NSMutableSet setWithCapacity:1];
+- (NSArray *)getReadPermsFromOptions:(NSArray *)options {
+    NSMutableOrderedSet *readPermSet = [NSMutableOrderedSet orderedSetWithCapacity:1];
 
     for(int i=0; i<[options count]; i++) {
         NSString *optionKey = options[i];
@@ -391,13 +391,13 @@
             }
         }
     }
-    return readPermSet;
+    return [readPermSet array];
 }
 
 
 // Returns HealthKit write permissions from options array
-- (NSSet *)getWritePermsFromOptions:(NSArray *)options {
-    NSMutableSet *writePermSet = [NSMutableSet setWithCapacity:1];
+- (NSArray *)getWritePermsFromOptions:(NSArray *)options {
+    NSMutableOrderedSet *writePermSet = [NSMutableOrderedSet orderedSetWithCapacity:1];
 
     for(int i=0; i<[options count]; i++) {
         NSString *optionKey = options[i];
@@ -408,7 +408,7 @@
             }
         }
     }
-    return writePermSet;
+    return [writePermSet array];
 }
 
 - (HKObjectType *)getWritePermFromString:(NSString *)writePerm {

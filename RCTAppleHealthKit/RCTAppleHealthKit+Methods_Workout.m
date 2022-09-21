@@ -74,6 +74,7 @@
         NSMutableArray *samples = [NSMutableArray array];
 
         NSArray *hrSamples = [input objectForKey:@"hrSamples"] ?: @[];
+        NSArray *intervals = [input objectForKey:@"intervals"] ?: @[];
 
         [hrSamples enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             double value = [obj doubleValue];
@@ -87,7 +88,27 @@
             }
         }];
 
-        if ([hrSamples count] > 0) {
+        [intervals enumerateObjectsUsingBlock:^(NSDictionary *interval, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSDate *startInterval = [RCTAppleHealthKit dateFromOptions:interval key:@"start" withDefault:nil];
+            NSDate *endInterval = [RCTAppleHealthKit dateFromOptions:interval key:@"end" withDefault:nil];
+
+            double calories = [interval[@"cals"] doubleValue];
+            HKQuantitySample* energySample = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierActiveEnergyBurned]
+                                                                        quantity:[HKQuantity quantityWithUnit:[HKUnit kilocalorieUnit] doubleValue:calories]
+                                                                        startDate:startInterval
+                                                                        endDate:endInterval];
+            [samples addObject:energySample];
+
+            double meters = [interval[@"distance"] doubleValue];
+            HKQuantityTypeIdentifier quantityType = type == HKWorkoutActivityTypeCycling ? HKQuantityTypeIdentifierDistanceCycling : HKQuantityTypeIdentifierDistanceWalkingRunning;
+            HKQuantitySample* distanceSample = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:quantityType]
+                                                                        quantity:[HKQuantity quantityWithUnit:[HKUnit meterUnit] doubleValue:meters]
+                                                                        startDate:startInterval
+                                                                        endDate:endInterval];
+            [samples addObject:distanceSample];
+        }];
+
+        if ([samples count] > 0) {
             [self.healthStore addSamples:samples toWorkout:workout completion:^(BOOL success, NSError * _Nullable error) {
                 if (!success) {
                     NSLog(@"An error occured saving the workout samples %@. The error was: %@.", workout, error);

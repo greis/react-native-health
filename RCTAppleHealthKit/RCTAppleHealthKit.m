@@ -560,8 +560,8 @@ RCT_EXPORT_METHOD(getClinicalRecords:(NSDictionary *)input callback:(RCTResponse
         if(permissions != nil){
             NSArray* readPermsArray = [permissions objectForKey:@"read"];
             NSArray* writePermsArray = [permissions objectForKey:@"write"];
-            NSSet* readPerms = [self getReadPermsFromOptions:readPermsArray];
-            NSSet* writePerms = [self getWritePermsFromOptions:writePermsArray];
+            NSSet* readPerms = [NSSet setWithArray:[self getReadPermsFromOptions:readPermsArray]];
+            NSSet* writePerms = [NSSet setWithArray:[self getWritePermsFromOptions:writePermsArray]];
 
             if(readPerms != nil) {
                 readDataTypes = readPerms;

@@ -12,8 +12,8 @@
 
 - (NSDictionary *)readPermsDict;
 - (NSDictionary *)writePermsDict;
-- (NSSet *)getReadPermsFromOptions:(NSArray *)options;
-- (NSSet *)getWritePermsFromOptions:(NSArray *)options;
+- (NSArray *)getReadPermsFromOptions:(NSArray *)options;
+- (NSArray *)getWritePermsFromOptions:(NSArray *)options;
 - (HKObjectType *)getWritePermFromString:(NSString *)string;
 - (NSString *)getAuthorizationStatusString:(HKAuthorizationStatus)status;
 + (NSDictionary *)getStringToWorkoutActivityTypeDictionary;
